@@ -1,15 +1,26 @@
-FROM debian:latest
-
-ENV HADOOP_HOME=/opt/hadoop \
-    JAVA_HOME=/usr \
-    NAMENODE_IP=\
-    NAMENODE_PORT=\
-    NODEMGR_IP=\
-    NODEMGR_IP=\
-
+FROM debian:stretch
 
 RUN apt-get update && \
     apt-get install -y wget openjdk-8-jdk openjdk-8-jre
 
-RUN wget -q -O- https://www-eu.apache.org/dist/hadoop/common/hadoop-3.1.2/hadoop-3.1.2.tar.gz \
+RUN mkdir /opt/hadoop && \
+    wget -q -O- http://mirrors.estointernet.in/apache/hadoop/common/hadoop-2.8.5/hadoop-2.8.5.tar.gz \
     | tar -xzv -C /opt/hadoop --strip 1
+
+RUN apt-get install -y supervisor telnet net-tools gettext
+
+ENV HADOOP_HOME=/opt/hadoop \
+    JAVA_HOME=/usr \
+    HDFS_PORT=9000
+
+
+# Docker managed volume, to persist the data on corresponding nodes.
+VOLUME ["/hadoop"]
+
+COPY conf /opt/hadoop/conf-template
+COPY supervisord /root/supervisord
+COPY start-hadoop.sh /start-hadoop.sh
+
+
+WORKDIR /opt/hadoop
+ENTRYPOINT ["bash", "/start-hadoop.sh"]

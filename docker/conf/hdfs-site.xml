@@ -1,0 +1,23 @@
+<configuration>
+    <property>
+            <name>dfs.namenode.name.dir</name>
+            <value>/hadoop/data/nameNode</value>
+    </property>
+
+    <property>
+            <name>dfs.datanode.data.dir</name>
+            <value>/hadoop/data/dataNode</value>
+    </property>
+
+    <property>
+            <name>dfs.replication</name>
+            <value>1</value>
+    </property>
+
+    <!-- NOTE: Disabling the reverse dns lookup check done by namenode, when
+         new datanode connects.. Dont disable in production environment. -->
+    <property>
+        <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+        <value>false</value>
+    </property>
+</configuration>
