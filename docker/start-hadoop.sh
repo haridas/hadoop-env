@@ -16,17 +16,23 @@
 nodeType=$1
 nameNodeIP=$2
 
+if [[ ! $nodeType || ! $nameNodeIP ]]
+then
+   echo "Missing command line arguments, 'nodeType' or 'namenode IP'"
+   exit 1
+fi
 
-case $nodeType in 
+case $nodeType in
     namenode)
 
     # Start the namenode and resource manager on this same node.
     echo "starting namenode."
 
     # Docker IP, Use it with namenode.
-    IP=`ip address | grep eth0 | grep inet | awk {' print $2 '} | cut -d / -f1`
-    export NAMENODE_HOST=$IP
-    export HDFS_HOST=$IP
+    #IP=`ip address | grep eth0 | grep inet | awk {' print $2 '} | cut -d / -f1`
+
+    export NAMENODE_HOST=$nameNodeIP
+    export HDFS_HOST=$nameNodeIP
 
     #Setup configurations.
     envsubst < $HADOOP_HOME/conf-template/hdfs-site.xml > $HADOOP_HOME/etc/hadoop/hdfs-site.xml
