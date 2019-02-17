@@ -46,25 +46,22 @@ which actually does the storage and compute part for the hadoop cluster.
 Run bellow command to start a docker container with namenode and resource
 manager setup.
 
+We packaged the hadoop on docker image, we can start the container in multiple
+ways by controlling the networking, filesystem behaviours. Usually namenode or
+datanodes opens bunch of ports to work with each other and accept requests from
+outside, so running docker with standard networking mode will be bit verbose to
+start with, so lets use `--net=host` option when running the namenode.
+
 ```bash
-docker run -it -d  \
-    -p 9000:9000
-    -p 8030-8033:8030-8033 \
-    -p 8088:8088
-    --name master \
-    hadoop:latest namenode
+docker run -it -d --name master --net host hadoop namenode <host-ip-address>
 ```
+Now you can access all the namenode/resourcemanger services via host-ip-address
+itself.
 
 ## Start Datanode and Node Manager
 
 ```bash
-docker run -it -d \
-    -p 50020:50020 \
-    -p 8040-8042:8040:8042 \
-    -p 50010:50010  \
-    -p 50075:50075 \
-    --name worker1 \
-    hadoop:latest datanode <namenode-ip>
+docker run -it -d --name worker1 --net host hadoop:latest datanode <namenode-ip>
 ```
 `namenode-ip` You will get this namenode after you start the namenode, which
 will be printed on the console.
@@ -74,8 +71,23 @@ master node.
 
 ## Verify the cluster is Ready
 
+We are running the hadoop processes wrapped in docker container, to access the
+corresponding commands we need connect to docker and test bellow commands.
+
+```bash
 ./bin/yarn node -list
 ./bin/yarn application -list
+
+
+# Submit a test job and confirm yarn is working fine.
+./bin/yarn jar `pwd`/opt/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar pi 1 20
+
+
+# Save some content in hdfs and confirm storage parts are fine.
+./bin/hdfs dfs -ls /  # list files in hdfs.
+./bin/hdfs dfs -put /etc/passwd /passwd # copy file from ouside to hdfs.
+./bin/hdfs dfs -cp /passwd /passwd-new  # copy files inside hdfs locations.
+```
 
 ## Service Ports
 
@@ -83,7 +95,7 @@ master node.
 ```
 172.18.0.2:9000  - HDFS main port
 0.0.0.0:50070    - DFS Namenode Web UI
-172.18.0.2:8088  - RM's web interface port and address.
+172.18.0.2:8088  - RM's Web interface port and address.
 172.18.0.2:8030  - Resource manager's (scheduers) interface port.
 172.18.0.2:8031  - 
 172.18.0.2:8032  - RM's application manager's interface.
