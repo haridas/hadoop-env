@@ -54,23 +54,86 @@ The image can be shipped via docker image repository  or
 
 # Test the cluster health
 
+### Get the client tools setup on your host
+```bash
+
+# copy a fresh copy of binaries into host machine, now you are ready to connect
+# your hadoop cluster using the client tools.
+docker cp datanode:/opt/hadoop .
+export PATH=`pwd`/hadoop/bin:$PATH
+
+```
+
 ### Check hdfs
+```bash
+hdfs dfs -ls /
+sudo -E ./hadoop/bin/hdfs dfs -put /var/log/supervisor /logs
+sudo -E ./hadoop/bin/hdfs dfs -put /etc/passwd /passwd
+sudo -E ./hadoop/bin/hdfs dfs -cp /passwd /passwdr
+
+```
 
 ### Check Resource manager works fine
 
-./bin/yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
+```bash
+yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
 pi 1 1
 
-./bin/yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
+yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
 wordcount /logs/* /out/
+```
 
 ## Other Bigdata tools on hadoop environment
 
 ## load pig
 
-http://mirrors.estointernet.in/apache/pig/pig-0.17.0/pig-0.17.0.tar.gz
+1. Download and extract it
+
+```
+wget http://mirrors.estointernet.in/apache/pig/pig-0.17.0/pig-0.17.0.tar.gz
+```
+
+
+2. Setup pig and configure it with hadoop cluster.
+
+
+```bash
+export PIG_HOME=<path-to-pig-home>
+export PATH=$PATH:$PIG_HOME/bin
+export PIG_CLASSPATH=<path-to-hadoop-conf-dir>
+
+pig
+```
+
+3. Load test data for testing
+
+```bash
+sudo -E ./hadoop/bin/hdfs dfs -mkdir /pig
+sudo -E ./hadoop/bin/hdfs dfs -put pig/tutorial/data /pig/data
+```
+
+
+4. Try pig commands
+
+mapreduce.jobhistory.address
+
+```bash
+pig
+# tutorials folder have set of commands try out each and see how it works.
+
+```
+
+Pig commands
+
+```
+raw = LOAD '/pig/data/excite.log.bz2' USING PigStorage('\t') AS (user, time,
+query);
+
+```
 
 
 ## Test hive
+
+SQL interface over hadoop system.
 
 http://mirrors.estointernet.in/apache/hive/hive-3.1.1/apache-hive-3.1.1-bin.tar.gz

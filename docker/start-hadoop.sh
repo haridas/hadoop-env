@@ -75,6 +75,10 @@ case $nodeType in
     echo ">> Namenode started on host: $IP"
 
     envsubst < /root/supervisord/namenode.conf > /etc/supervisor/conf.d/namenode.conf
+
+    # Start the history server in namenode.
+    echo "Starting the jobhistory server on namenode machine"
+    $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver
     shift;;
 datanode)
     echo "Starting the Datanode and Node manager"
