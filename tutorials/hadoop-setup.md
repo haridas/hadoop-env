@@ -115,8 +115,6 @@ sudo -E ./hadoop/bin/hdfs dfs -put pig/tutorial/data /pig/data
 
 4. Try pig commands
 
-mapreduce.jobhistory.address
-
 ```bash
 pig
 # tutorials folder have set of commands try out each and see how it works.
@@ -126,8 +124,12 @@ pig
 Pig commands
 
 ```
-raw = LOAD '/pig/data/excite.log.bz2' USING PigStorage('\t') AS (user, time,
+raw = LOAD '/pig/data/excite-small.log' USING PigStorage('\t') AS (user, time,
 query);
+
+user = filter raw by $2=='powwow.com';
+
+dump user
 
 ```
 
