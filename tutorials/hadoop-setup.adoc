@@ -1,4 +1,26 @@
-# hadoop cluster setup multinode
+Hadoop cluster setup
+====================
+:toc:
+
+
+Setup standard hadoop in cluster mode on single node or multiple node environment.
+Hadoop cluster mode means, the individual components are run separately on single machine
+as separate JVMs or running on multple machines. There is an single machine setup
+version of hadoop to quickly play around with its features, which make use only one
+JVM to handle all the components. 
+
+Here we are trying to setup a hadoop in cluster mode, one single machine with multiple
+jvms or multiple machines.
+
+== Pre-requisites
+As all cluster environments, network address resoluation for each node is a key requirement
+for stable setup. Ideally a local DNS setup which permanantly allocate a hostnames
+to all the nodes in the network. Or we can manually set the hostnames without DNS.
+
+=== Set correct hostnames
+NOTE: If you setting the cluster on same machine, you can skip this step.
+
+Each node in the host machine can reach each other using the hostname.
 
 Hadoop cluster setup using multiple physical machines.
 ## Node preprations
@@ -31,7 +53,15 @@ hostname
 Cross check all the machines have correct set of hostnames before going to next
 step.
 
-## Get the docker hadoop image
+=== Build hadoop docker image
+NOTE: You can skip this unless you want to know what's happening here. I already
+build and pushed the image to docker hub, you can use it directly.
+
+
+== Setup cluster on single machine using docker
+
+
+=== Get the docker hadoop image
 
 Docker image is packed with following items for homogenious environment.
 
