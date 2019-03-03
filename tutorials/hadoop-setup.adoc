@@ -1,8 +1,9 @@
 Hadoop cluster setup
 ====================
-:toc:
+:toc2:
+:numbered:
 
-
+== Hadoop Cluster
 Setup standard hadoop in cluster mode on single node or multiple node environment.
 Hadoop cluster mode means, the individual components are run separately on single machine
 as separate JVMs or running on multple machines. There is an single machine setup
@@ -10,7 +11,7 @@ version of hadoop to quickly play around with its features, which make use only 
 JVM to handle all the components. 
 
 Here we are trying to setup a hadoop in cluster mode, one single machine with multiple
-jvms or multiple machines.
+jvms or multiple machines. We are using docker image to package and run the hadoop tools.
 
 == Pre-requisites
 As all cluster environments, network address resoluation for each node is a key requirement
@@ -61,7 +62,7 @@ build and pushed the image to docker hub, you can use it directly.
 == Setup cluster on single machine using docker
 
 
-=== Get the docker hadoop image
+=== Ensure hadoop docker image is available
 
 Docker image is packed with following items for homogenious environment.
 
@@ -69,8 +70,16 @@ Docker image is packed with following items for homogenious environment.
 2. hadoop 2.8.5
 3. Required configurations.
 
-
+### Get the hadoop docker image from Dockerhub
+```bash
+docker pull haridasn/hadoop-2.8.5:latest
+```
 ### Build the docker image locally
+
+```bash
+git clone https://github.com/haridas/hadoop-env
+cd hadoop-env/docker
+docker build
 
 ### Get the docker image from repo or fileserver.
 
