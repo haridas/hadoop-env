@@ -21,13 +21,13 @@ Main Hadoop services are:-
 3. resource manager ( computation )
 4. node manager ( computation )
 
-One hadoop cluster can formed by one namenode and multple datanodes.
+One hadoop cluster can formed by one namenode and multiple datanodes.
 The resource manager runs on same machine as namenode ( simpler setup). Responsibility of namenode is store metadata about distributed
 filesystem (hdfs). Datanode actually stores the data in blob form,
 and nodemanager will be running on each datanode to handle actual
 computation requests from resource manager.
 
-== Pre-requisites
+== Prerequisites
 As all cluster environments, network address resolution for each node is a key requirement
 for stable setup. Ideally a local DNS setup which permanently allocate a hostnames
 to all the nodes in the network. Or we can manually set the hostnames without DNS.
@@ -104,7 +104,7 @@ docker logs -f namenode
 
 Optionally you can run the Namenode and Resource manager without
 sharing the host-network. In this case docker abstract the network
-stack by itself, so no interferance with host network and ports.
+stack by itself, so no interference with host network and ports.
 
 There is one advantage with this method, we can run multiple
 namenode(s)/datanode(s) on same machine without `port` collision.
