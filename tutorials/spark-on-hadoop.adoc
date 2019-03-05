@@ -1,0 +1,21 @@
+== Spark With Haddop
+
+=== Setup cluster with default cluster manager
+
+1. Set the hostame of the master correctly, so that
+workers can resolve the master back.
+
+
+```
+2019-03-04 10:05:01 INFO  Master:54 - Registering app pyspark-notebook
+2019-03-04 10:05:01 INFO  Master:54 - Registered app pyspark-notebook with ID app-20190304100501-0000
+2019-03-04 10:05:01 INFO  Master:54 - Launching executor app-20190304100501-0000/0 on worker worker-20190304100350-10.50.168.235-37501
+2019-03-04 10:06:11 INFO  Master:54 - Registering worker 10.50.168.159:41765 with 4 cores, 20.0 GB RAM
+2019-03-04 10:06:11 INFO  Master:54 - Launching executor app-20190304100501-0000/1 on worker worker-20190304100611-10.50.168.159-41765
+
+```
+
+
+== Spark with Cloud
+
+=== s3

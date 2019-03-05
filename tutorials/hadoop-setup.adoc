@@ -5,14 +5,12 @@ Hadoop cluster setup
 
 == Hadoop Cluster
 
-Setup standard hadoop in cluster mode on single node or multiple node environment.
-Hadoop cluster mode means, the individual components are run separately on single machine
-as separate JVMs or running on multiple machines. There is an single machine setup
-version of hadoop to quickly play around with its features, which make use only one
-JVM to handle all the components.
+Main motive of the session is how we can easily test the hadoop
+cluster and related tools locally or on a small cluster. We will setup the hadoop in cluster mode. Hadoop cluster mode means, the individual components are runs separately on single machine
+on separate JVMs or running on multiple machines.
 
-Here we are trying to setup a hadoop in cluster mode, one single machine with multiple
-jvms or multiple machines. We are using docker image to package and run the hadoop tools.
+Here we will use the docker based setup to quickly play with main
+features of hadoop.
 
 Main Hadoop services are:-
 
@@ -32,6 +30,33 @@ As all cluster environments, network address resolution for each node is a key r
 for stable setup. Ideally a local DNS setup which permanently allocate a hostnames
 to all the nodes in the network. Or we can manually set the hostnames without DNS.
 
+NOTE: This material is verified on Mac and Ubuntu.
+
+=== JDK 1.8 
+
+NOTE: Not required if you try Docker based setup.
+
+Ensure you have jdk 1.8+ available on your machine, oracle jdk is
+recommended.
+
+
+=== Install Docker
+
+Ensue you have latest version of docker is setup on your laptop.
+
+Docker Version: `18.x.x`
+
+===== For Ubuntu / Debian machines
+
+Follow this link and install the docker with correct given bellow,
+
+https://docs.docker.com/install/linux/docker-ce/ubuntu/
+
+===== For Mac
+https://docs.docker.com/docker-for-mac/install/
+
+For other distros, please help yourself ;)
+
 
 === Get hadoop docker image
 
@@ -47,14 +72,15 @@ cd hadoop-env/docker
 docker build -t hadoop-2.8.5:latest
 ```
 
-=== Set correct hostnames for multi-node cluster setup
-NOTE: If you setting the cluster on same machine with docker, you can skip this step.
+=== Set correct hostnames for multi-node cluster setup (Optional)
+
+NOTE: If you are setting the cluster on same machine with docker, you can skip this step.
 
 Each node in the host machine can reach each other using the hostname.
 
 Hadoop cluster setup using multiple physical machines.
 
-1. set hostnames correctly.
+===== set hostnames correctly.
 
 All the nodes place the same set of values.
 
@@ -68,12 +94,12 @@ node3
 ..
 ```
 
-2. Set the hostname of the machine to match this address.
+=====  Set the hostname of the machine to match this address.
 
 edit `/etc/hostname`
 edit `/etc/hosts` and replace any occurrence of old hostname with new one.
 
-3. Update and check hostname changed correctly
+=====  Update and check hostname changed correctly
 
 ```bash
 sudo hostname <hostname>
@@ -84,15 +110,27 @@ step.
 
 == Setup cluster on single machine using docker
 
-We are using the docker container mainly to isolate the processes, for a simpler
+We are using the docker container mainly for process isolation,
+for a simpler
 setup on single machine we make use of the same network stack as the host machine.
+
+=== Create a docker network
+For clean hostname resoluation under docker environment, we have
+to create a docker network; which will internally provide a DNS
+resoluation on the virtual network where all the containers reside.
+
+```bash
+docker network create hadoop-nw
+```
+
+We will use this network to launch all our container, which will
+internally allocate all the containers into this network. So we will
+get the hostname resoluation by default. For the non-docker deployment we have to setup all these externally.
 
 === Start namenode and resource Manager
 
-The option `--net host` bellow allow us to use the host machine's network stack.
-
 ```
-docker run -it -d --name namenode --net host haridasn/hadoop-2.8.5:latest namenode <host-ip>
+docker run -it -d --name namenode --network hadoop-nw haridasn/hadoop-2.8.5:latest namenode
 
 # check container is running
 docker ps -a
@@ -102,69 +140,87 @@ docker logs -f namenode
 
 ```
 
-Optionally you can run the Namenode and Resource manager without
-sharing the host-network. In this case docker abstract the network
-stack by itself, so no interference with host network and ports.
+To get the `namenode` ip, attach to the namenode docker container,
+We need this for starting the datanodes.
 
-There is one advantage with this method, we can run multiple
-namenode(s)/datanode(s) on same machine without `port` collision.
+```bash
+docker exec -it namenode bash
+ifconfig
+```
 
 === Start datanode and resource manager
 
 ```bash
-docker run -it -d --name datanode1 --net host haridasn/hadoop-2.8.5:latest datanode <name-node-ip>
+docker run -it -d --name datanode1 --network hadoop-nw haridasn/hadoop-2.8.5:latest datanode <name-node-ip>
 
 docker ps -a
 
 docker logs -f datanode1
 
+.
+# If you want launch more datanodes.
+
+docker run -it -d --name datanode2 --network hadoop-nw haridasn/hadoop-2.8.5:latest datanode <name-node-ip>
+
 ```
 
-IMPORTANT: Since we are sharing the host network stack, we can't run
-more than one datanode single machine setup.
+### Get the client tools setup on another docker
 
+The `yarn`, `hdfs` clinet commands used to submit jobs and see the hdfs 
+files respectively are loaded in another docker. Lets use that as our workbench to play with our hadoop cluster.
 
-### Get the client tools setup on your host
 ```bash
 
-# copy a fresh copy of binaries into host machine, now you are ready to connect
-# your hadoop cluster using the client tools.
-docker cp datanode:/opt/hadoop .
-export PATH=`pwd`/hadoop/bin:$PATH
+# Start the docker container to test our cluster.
+docker run -it --rm --name hadoop-cli --network hadoop-nw haridasn/hadoop-cli:latest
 
+# Get the configuration from running nodes.
+docker cp namenode:/opt/hadoop/etc etc
+docker cp etc hadoop-cli:/opt/hadoop/
 ```
+
+
 
 ### Check hdfs
 ```bash
-hdfs dfs -ls /
-sudo -E ./hadoop/bin/hdfs dfs -put /var/log/supervisor /logs
-sudo -E ./hadoop/bin/hdfs dfs -put /etc/passwd /passwd
-sudo -E ./hadoop/bin/hdfs dfs -cp /passwd /passwdr
+
+./bin/hdfs dfs -ls /
+
+# copy files into hdfs
+./bin/hdfs dfs -put /var/log/supervisor /logs
+./bin/hdfs dfs -put /etc/passwd /passwd
+
+# Copy files inside hdfs
+./bin/hdfs dfs -cp /passwd /passwdr
 
 ```
 
 ### Check Resource manager works fine
 
 ```bash
-yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
+./bin/yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
 pi 1 1
 
-yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
+./bin/yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
 wordcount /logs/* /out/
 ```
 
 ## Other Bigdata tools on hadoop environment
 
-## load pig
+## Pig
 
-1. Download and extract it
+A simpler command oriented interface to do the map-reduce jobs over
+hadoop cluster. You can think this as a bash scripting over hdfs
+and yarn map-reduce to quickly analyse data on hdfs.
+
+=====  Download and extract it
 
 ```
 wget http://mirrors.estointernet.in/apache/pig/pig-0.17.0/pig-0.17.0.tar.gz
 ```
 
 
-2. Setup pig and configure it with hadoop cluster.
+=====  Setup pig and configure it with hadoop cluster.
 
 
 ```bash
@@ -175,7 +231,7 @@ export PIG_CLASSPATH=<path-to-hadoop-conf-dir>
 pig
 ```
 
-3. Load test data for testing
+=====  Load some data into hdfs
 
 ```bash
 sudo -E ./hadoop/bin/hdfs dfs -mkdir /pig
@@ -183,19 +239,14 @@ sudo -E ./hadoop/bin/hdfs dfs -put pig/tutorial/data /pig/data
 ```
 
 
-4. Try pig commands
+=====  Pig commandline tool
 
-```bash
-pig
-# tutorials folder have set of commands try out each and see how it works.
 
 ```
+$ pig
 
-Pig commands
+raw = LOAD '/pig/data/excite-small.log' USING PigStorage('\t') AS (user, time,query);
 
-```
-raw = LOAD '/pig/data/excite-small.log' USING PigStorage('\t') AS (user, time,
-query);
 user = filter raw by $2=='powwow.com';
 
 dump user
@@ -203,7 +254,7 @@ dump user
 ```
 
 
-## Test hive
+## Hive
 
 SQL interface over hadoop system.
 
