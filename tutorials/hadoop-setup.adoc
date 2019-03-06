@@ -234,8 +234,8 @@ pig
 =====  Load some data into hdfs
 
 ```bash
-sudo -E ./hadoop/bin/hdfs dfs -mkdir /pig
-sudo -E ./hadoop/bin/hdfs dfs -put pig/tutorial/data /pig/data
+./bin/hdfs dfs -mkdir /pig
+./bin/hdfs dfs -put pig/tutorial/data /pig/data
 ```
 
 
