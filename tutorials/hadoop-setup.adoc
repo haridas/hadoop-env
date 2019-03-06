@@ -205,9 +205,9 @@ pi 1 1
 wordcount /logs/* /out/
 ```
 
-## Other Bigdata tools on hadoop environment
+== Other Bigdata tools on hadoop environment
 
-## Pig
+=== Pig
 
 A simpler command oriented interface to do the map-reduce jobs over
 hadoop cluster. You can think this as a bash scripting over hdfs
@@ -254,7 +254,7 @@ dump user
 ```
 
 
-## Hive
+=== Hive
 
 SQL interface over hadoop system.
 
