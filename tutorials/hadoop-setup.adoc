@@ -202,7 +202,7 @@ docker cp etc hadoop-cli:/opt/hadoop/
 pi 1 1
 
 ./bin/yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
-wordcount /logs/* /out/
+wordcount /logs/ /out/
 ```
 
 == Other Bigdata tools on hadoop environment
