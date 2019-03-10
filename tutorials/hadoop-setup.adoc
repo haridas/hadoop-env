@@ -19,19 +19,18 @@ Main Hadoop services are:-
 3. resource manager ( computation )
 4. node manager ( computation )
 
-One hadoop cluster can formed by one namenode and multple datanodes.
+One hadoop cluster can formed by one namenode and multiple datanodes.
 The resource manager runs on same machine as namenode ( simpler setup). Responsibility of namenode is store metadata about distributed
 filesystem (hdfs). Datanode actually stores the data in blob form,
 and nodemanager will be running on each datanode to handle actual
 computation requests from resource manager.
 
-NOTE: This material is verified on Mac and Ubuntu.
-
-== Pre-requisites
-
-All cluster environments network address resolution for each node is a key requirement
-for a stable setup. Ideally a local DNS setup which permanently allocate a hostname
+== Prerequisites
+As all cluster environments, network address resolution for each node is a key requirement
+for stable setup. Ideally a local DNS setup which permanently allocate a hostnames
 to all the nodes in the network. Or we can manually set the hostnames without DNS.
+
+NOTE: This material is verified on Mac and Ubuntu.
 
 === JDK 1.8 
 
@@ -203,12 +202,12 @@ docker cp etc hadoop-cli:/opt/hadoop/
 pi 1 1
 
 ./bin/yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
-wordcount /logs/* /out/
+wordcount /logs/ /out/
 ```
 
-## Other Bigdata tools on hadoop environment
+== Other Bigdata tools on hadoop environment
 
-## Pig
+=== Pig
 
 A simpler command oriented interface to do the map-reduce jobs over
 hadoop cluster. You can think this as a bash scripting over hdfs
@@ -235,8 +234,8 @@ pig
 =====  Load some data into hdfs
 
 ```bash
-sudo -E ./hadoop/bin/hdfs dfs -mkdir /pig
-sudo -E ./hadoop/bin/hdfs dfs -put pig/tutorial/data /pig/data
+./bin/hdfs dfs -mkdir /pig
+./bin/hdfs dfs -put pig/tutorial/data /pig/data
 ```
 
 
@@ -255,7 +254,7 @@ dump user
 ```
 
 
-## Hive
+=== Hive
 
 SQL interface over hadoop system.
 
