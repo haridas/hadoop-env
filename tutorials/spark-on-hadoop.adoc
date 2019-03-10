@@ -1,5 +1,6 @@
-== Spark With Haddop
+= Apache Spark
 
+== Spark With hadoop
 === Setup cluster with default cluster manager
 
 1. Set the hostame of the master correctly, so that
@@ -18,4 +19,21 @@ workers can resolve the master back.
 
 == Spark with Cloud
 
-=== s3
+=== spark-shell connected with s3
+
+Spark version: `2.4.0`, Hadoop version works from 2.7+, ensure the
+loaded packages and jars doesn't have different versions on the 
+
+
+```bash
+
+./bin/spark-shell --packages=org.apache.hadoop:hadoop-aws:1.7.3 \
+
+
+spark> import com.amazonaws.auth._
+spark> val envReader = new EnvironmentVariableCredentialsProvider()
+scala> spark.sparkContext.hadoopConfiguration.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+scala> spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", envReader.getCredentials().getAWSAccessKeyId)
+scala> spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", envReader.getCredentials().getAWSSecretKey)
+
+```
