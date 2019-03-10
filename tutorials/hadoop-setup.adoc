@@ -202,12 +202,12 @@ docker cp etc hadoop-cli:/opt/hadoop/
 pi 1 1
 
 ./bin/yarn jar `pwd`/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
-wordcount /logs/* /out/
+wordcount /logs/ /out/
 ```
 
-## Other Bigdata tools on hadoop environment
+== Other Bigdata tools on hadoop environment
 
-## Pig
+=== Pig
 
 A simpler command oriented interface to do the map-reduce jobs over
 hadoop cluster. You can think this as a bash scripting over hdfs
@@ -234,8 +234,8 @@ pig
 =====  Load some data into hdfs
 
 ```bash
-sudo -E ./hadoop/bin/hdfs dfs -mkdir /pig
-sudo -E ./hadoop/bin/hdfs dfs -put pig/tutorial/data /pig/data
+./bin/hdfs dfs -mkdir /pig
+./bin/hdfs dfs -put pig/tutorial/data /pig/data
 ```
 
 
@@ -254,7 +254,7 @@ dump user
 ```
 
 
-## Hive
+=== Hive
 
 SQL interface over hadoop system.
 
