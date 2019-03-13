@@ -44,12 +44,16 @@ covering more on it here.
 
 === Setup Hadoop cluster
 
+NOTE: Mac and Windows users has to provide enough memory and cpus to the docker
+daemon. On these machines the docker daemon runs under a virtual machine; the installer
+setup all these. The default size gives is around 2 cpu core and 2gb. Ensure you provision
+at least 5GB RAM and 3Core CPU for docker daemon to play around with bellow experiments.
+
 We already covered this part, in our session 1. Lets add some extra
 memory constraints when launching the nodes to get more idea on how
 yarn manages the resources. Here we are exposing the required ports
 to host machine to see the Web interfaces of RN and HDFS.
 
-IMPORTANT: Container Security part is not addressed on this installations. The security part is outside the session scope.
 
 ```bash
 
@@ -133,21 +137,54 @@ docker exec -it spark bash
 
 # Inside the spark docker 
 #
-
 export HADOOP_CONF_DIR=/opt/hadoop-conf
+
+# Try on scala client.
 spark-shell --master yarn --deploy-mode client
 
-#OR connect via jupyter notebok, so we can use python to write
-# spark jobs via pyspark.
+# Try on python client.
+pyspark --master yarn --deploy-mode client
 
+
+# connect via jupyter notebok, so we can use python to write
+# spark jobs via pyspark.
 jupyter notebook --no-browser --ip=0.0.0.0 --port 8090
 ```
 
+NOTE: Checkout the command line options `pyspark --help` to know more options
+that we can try when submitting the jobs or running as client mode.
+
+
+=== View the full cluster health
+
+As we are running all the services via docker ensure that the containers are getting
+enough resources so that we can play with spark using some smaller size data set to 
+under stand how the APIs and other features works in spark.
+
+```bash
+# To get the ideas about container resource consumption CPU/RAM/IO
+# Ensure you have enough left.
+docker stats
+```
+
+Test setup is worked well on:-
+
+```text
+Test cluster setup on my laptop with 4 core CPU and 8GB memory.
+
+Allocated
+
+    5GB for docker daemon running on your laptop.
+    3 Core for docker daemon on your laptop.
+```
+
+My Setup:-
+
+image::images/hadoop-spark-cluster.png[Hadoop cluster image]
 
 === Submit jobs into spark cluster
 
-==== Python jobs
-==== Scala jobs
+Try more examples from this link: https://spark.apache.org/examples.html
 
 == Spark with Cloud Storages
 
@@ -172,3 +209,5 @@ scala> spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", envReader
 scala> spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", envReader.getCredentials().getAWSSecretKey)
 
 ```
+
+== Next: Apache spark vs Apache Drill
