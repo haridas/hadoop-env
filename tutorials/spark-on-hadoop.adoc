@@ -127,7 +127,7 @@ spark-shell --master yarn --deploy-mode client
 #OR connect via jupyter notebok, so we can use python to write
 # spark jobs via pyspark.
 
-jupyter notebook --no-browser --ip=0.0.0.0 --port 8090 --allow-root
+jupyter notebook --no-browser --ip=0.0.0.0 --port 8090
 ```
 
 
