@@ -1,23 +1,137 @@
+:toc:
+:numbered:
+
+
 = Apache Spark
 
-== Spark With hadoop
-=== Setup cluster with default cluster manager
+Spark is a general purpose distributed analytic engine.
 
-1. Set the hostame of the master correctly, so that
-workers can resolve the master back.
+Spark can execute tasks in DAG with lazy evaluation for better query
+optimization.
+
+
+== Spark cluster modes
+
+Spark can be deployed in cluster form to execute tasks across multiple machines. 
+
+For this workshop we are covering the *Spark over Yarn* setup. Which
+is more scalable and has more cluster management options provided
+by Yarn resource manager.
+
+===== Standalone cluster
+Run spark cluster without hadoop or any of the bellow mentioned
+cluster managers. Spark shipped with this Standalone default
+cluster manager. We can easily setup a spark cluster using this.
+
+Here we aren't covering it, Yarn based cluster manager has more
+advanced features and resource controllers. We are focusing mainly
+Yarn based cluster manager here.
+
+===== Spark on Yarn
+This document discuss more about how we handle the spark on Yarn
+clster. Please read futher to see more on it.
+
+===== Spark on Kubernetes
+We will cover this on 4'th session of Bigdata workshop.
+
+===== Spark on Mesos
+Mesos is another cluster resource manager like Yarn, we aren't
+covering more on it here.
+
+
+== Setup Spark on Yarn
+
+
+=== Setup Hadoop cluster
+
+We already covered this part, in our session 1. Lets add some extra
+memory constraints when launching the nodes to get more idea on how
+yarn manages the resources. Here we are exposing the required ports
+to host machine to see the Web interfaces of RN and HDFS.
+
+IMPORTANT: Container Security part is not addressed on this installations. The security part is outside the session scope.
+
+```bash
+
+# Launch namenode with 2 core cpu, 2gb memory.
+#
+docker run -it -d --name namenode \
+    -p 8088:8088 \
+    -p 50070:50070 \
+    --memory 2g --cpus 2
+    --network hadoop-nw haridasn/hadoop-2.8.5 namenode
+#
+# 8088 - RN web interface
+# 50070 - HDFS web interface.
+#
+
+#
+# Datanode 1, 2
+
+docker run -it -d --name datanode1 \
+    --memory 2g --cpus 2 \
+    --network hadoop-nw haridasn/hadoop-2.8.5 datanode <namenode-ip>
+
+docker run -it -d --name datanode2 \
+    --memory 2g --cpus 2 \
+    --network hadoop-nw haridasn/hadoop-2.8.5 datanode <namenode-ip>
+
+```
+
+Check the container memory allocation status using `docker stats` command.
+
+=== Create a client docker container
+
+```bash
+docker run -it -d --name hadoop-cli --network hadoop-nw haridasn/hadoop-2.8.5
+```
+
+=== spark on another docker container
+
+```bash
+docker pull haridasn/spark-2.4.0
+
+docker run -it -d --name spark --network hadoop-nw haridasn/spark-2.4.0
+```
+
+
+=== Connect spark with Yarn
+
+```bash
+
+# Get the hadoop configurations.
+docker cp namenode:/opt/hadoop/etc .
+
+docker cp etc/hadoop spark:/opt/hadoop-conf
+
+```
+
+=== Lets play on spark
+
+```
+# Connect to the spark container to play with it.
+docker exec -it spark bash
+
+export HADOOP_CONF_DIR=/opt/hadoop-conf
+
+spark-shell --master yarn --deploy-mode client
+
+#OR connect via jupyter notebok, so we can use python to write
+# spark jobs via pyspark.
+
+jupyter notebook --no-browser --ip=0.0.0.0 --port 8090 --allow-root
+```
+
 
 
 ```
-2019-03-04 10:05:01 INFO  Master:54 - Registering app pyspark-notebook
-2019-03-04 10:05:01 INFO  Master:54 - Registered app pyspark-notebook with ID app-20190304100501-0000
-2019-03-04 10:05:01 INFO  Master:54 - Launching executor app-20190304100501-0000/0 on worker worker-20190304100350-10.50.168.235-37501
-2019-03-04 10:06:11 INFO  Master:54 - Registering worker 10.50.168.159:41765 with 4 cores, 20.0 GB RAM
-2019-03-04 10:06:11 INFO  Master:54 - Launching executor app-20190304100501-0000/1 on worker worker-20190304100611-10.50.168.159-41765
+[Stage 4:===================================>    (1092 + 4) / 1196]
 
+[Stages in DAG: ===> (completed #partitions + in progress #partitions) / #partitions ]
 ```
 
 
-== Spark with Cloud
+== Spark with Cloud Storages
 
 === spark-shell connected with s3
 
@@ -26,6 +140,9 @@ loaded packages and jars doesn't have different versions on the
 
 
 ```bash
+
+export AWS_ACCESS_KEY=
+export AWS_SECRET_KEY=
 
 ./bin/spark-shell --packages=org.apache.hadoop:hadoop-aws:1.7.3 \
 
