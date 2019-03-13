@@ -86,7 +86,7 @@ Check the container memory allocation status using `docker stats` command.
 docker run -it -d --name hadoop-cli --network hadoop-nw haridasn/hadoop-2.8.5
 ```
 
-=== spark on another docker container
+=== Run Spark Container
 
 ```bash
 docker pull haridasn/spark-2.4.0
@@ -102,8 +102,16 @@ docker run -it -d --name spark --network hadoop-nw haridasn/spark-2.4.0
 # Get the hadoop configurations.
 docker cp namenode:/opt/hadoop/etc .
 
-docker cp etc/hadoop spark:/opt/hadoop-conf
+docker cp etc/hadoop spark:/opt/spark/hadoop-conf
+```
 
+=== Create spark user dir in HDFS
+
+```
+docker exec -it hadoop-cli bash
+./bin/hdfs dfs -mkdir /user/spark
+./bin/hdfs dfs -chown spark:spark /user/spark
+./bin/hdfs dfs -ls /user/spark
 ```
 
 === Lets play on spark
