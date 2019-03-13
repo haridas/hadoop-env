@@ -84,6 +84,11 @@ Check the container memory allocation status using `docker stats` command.
 
 ```bash
 docker run -it -d --name hadoop-cli --network hadoop-nw haridasn/hadoop-cli
+
+# Add the hadoop configuration to hadoop-client container.
+# You can skip this if you already done this.
+docker cp namenode:/opt/hadoop/etc .
+docker cp etc hadoop-cli:/opt/hadoop/
 ```
 
 === Run Spark Container
@@ -126,8 +131,10 @@ docker exec -it hadoop-cli bash
 # Connect to the spark container to play with it.
 docker exec -it spark bash
 
-export HADOOP_CONF_DIR=/opt/hadoop-conf
+# Inside the spark docker 
+#
 
+export HADOOP_CONF_DIR=/opt/hadoop-conf
 spark-shell --master yarn --deploy-mode client
 
 #OR connect via jupyter notebok, so we can use python to write
@@ -137,13 +144,10 @@ jupyter notebook --no-browser --ip=0.0.0.0 --port 8090
 ```
 
 
+=== Submit jobs into spark cluster
 
-```
-[Stage 4:===================================>    (1092 + 4) / 1196]
-
-[Stages in DAG: ===> (completed #partitions + in progress #partitions) / #partitions ]
-```
-
+==== Python jobs
+==== Scala jobs
 
 == Spark with Cloud Storages
 
