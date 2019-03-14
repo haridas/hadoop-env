@@ -1,0 +1,37 @@
+:toc:
+:numbered:
+
+= Apache Drill 
+
+Drill is another general purpose SQL engine on Hadoop environment.
+
+
+== How to clean your docker containers
+
+```bash
+
+# To list all the running or stopped containers.
+docker ps -a
+
+# 
+
+```
+
+
+
+
+
+== Setup Apache Drill
+
+For this workshop we will be using Drill over hadoop cluster.
+
+So to setup Apache drill you need hadoop cluster up and running on your machine,
+please refer previous workshop to cover it. 
+
+
+
+=== link:spark-on-hadoop.adoc#setup-spark-on-yarn[Setup Apache Spark on Hadoop]
+
+We alrady done this on Session 2, Lets get all upto this level. Please proceed with
+
+=== Setup Apache Spark on Hadoop
