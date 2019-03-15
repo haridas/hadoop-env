@@ -35,13 +35,14 @@ nameNodeIP=$2
 #   To play with real multi-node cluster, we need at least two physical boxes.
 #
 
-#if [[ ! $nodeType || ! $nameNodeIP ]]
 if [[ ! $nodeType ]]
 then
    #echo "Missing command line arguments, 'nodeType' or 'namenode IP'"
    echo "Missing command line arguments, 'nodeType'"
    exit 1
 fi
+
+nodeIp=`ifconfig | grep eth0 -A 1 | grep inet | awk {' print $2 '}`
 
 case $nodeType in
     namenode)
@@ -50,17 +51,17 @@ case $nodeType in
     echo "starting namenode."
 
     # Docker IP, Use it with namenode.
-    IP=`ip address | grep eth0 | grep inet | awk {' print $2 '} | cut -d / -f1`
-    if [[ $IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    if [[ ! $nameNodeIP ]]; then
 		# If we are using the docker network addresses then it comes here.
-		export NAMENODE_HOST=$IP
-		export HDFS_HOST=$IP
+		export NAMENODE_HOST=$nodeIp
+		export HDFS_HOST=$nodeIp
 	else
 		export NAMENODE_HOST=$nameNodeIP
 		export HDFS_HOST=$nameNodeIP
 	fi
 
-    #Setup configurations.
+    #Setup configurations. This need to be done before calling the namenode
+    # initialization.
     envsubst < $HADOOP_HOME/conf-template/hdfs-site.xml > $HADOOP_HOME/etc/hadoop/hdfs-site.xml
     envsubst < $HADOOP_HOME/conf-template/core-site.xml > $HADOOP_HOME/etc/hadoop/core-site.xml
     envsubst < $HADOOP_HOME/conf-template/mapred-site.xml > $HADOOP_HOME/etc/hadoop/mapred-site.xml
@@ -80,18 +81,18 @@ case $nodeType in
     echo "Starting the jobhistory server on namenode machine"
     $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh  start historyserver
     shift;;
+
 datanode)
     echo "Starting the Datanode and Node manager"
     echo "Node manager will be attached to resource manager"
     export NAMENODE_HOST=$nameNodeIP
     export HDFS_HOST=$nameNodeIP
 
-    IP=`ip address | grep eth0 | grep inet | awk {' print $2 '} | cut -d / -f1`
-    if [[ $IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        export WORKER_HOSTNAME=$IP
+    if [[ ! $nodeIp ]]; then
+        export WORKER_HOSTNAME=`hostname`
     else
         # Default goes with hostname of the machine.
-        export WORKER_HOSTNAME=`hostname`
+        export WORKER_HOSTNAME=$nodeIp
     fi
 
     envsubst < /root/supervisord/datanode.conf > /etc/supervisor/conf.d/datanode.conf

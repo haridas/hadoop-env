@@ -1,10 +1,10 @@
-FROM ubuntu:disco
+FROM ubuntu:19.04
 
 RUN apt-get update && \
     apt-get install -y wget openjdk-8-jdk openjdk-8-jre
 
-RUN mkdir /opt/spark && wget -q -O- http://mirrors.estointernet.in/apache/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz \
-    | tar -xzv -C /opt/spark --strip 1
+RUN mkdir /opt/drill && wget -q -O- http://mirrors.estointernet.in/apache/drill/drill-1.15.0/apache-drill-1.15.0.tar.gz \
+    | tar -xzv -C /opt/drill --strip 1
 
 RUN apt-get install -y supervisor telnet net-tools gettext python-pip python-dev
 
@@ -18,5 +18,4 @@ COPY requirements-spark.txt requirements.txt
 RUN pip install --user -r requirements.txt
 
 ENV SPAKR_HOME=/opt/spark \
-    PATH=/opt/spark/bin:/home/spark/.local/bin:$PATH \
-    HADOOP_CONF_DIR=/opt/spark/hadoop-conf
+    PATH=/opt/spark/bin:/home/spark/.local/bin:$PATH
