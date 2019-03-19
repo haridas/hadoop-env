@@ -17,8 +17,8 @@ ENV HADOOP_HOME=/opt/hadoop \
 # Docker managed volume, to persist the data on corresponding nodes.
 #VOLUME ["/hadoop"]
 
-COPY conf /opt/hadoop/conf-template
-COPY supervisord /root/supervisord
+COPY conf/hadoop /opt/hadoop/conf-template
+COPY conf/supervisord /root/supervisord
 COPY start-hadoop.sh /start-hadoop.sh
 
 

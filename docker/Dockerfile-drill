@@ -8,9 +8,22 @@ RUN mkdir /opt/drill && wget -q -O- http://mirrors.estointernet.in/apache/drill/
 
 RUN useradd -ms /bin/bash drill
 
-RUN chown drill:drill /opt/drill -R
+RUN apt-get install -y telnet net-tools gettext sudo
+
+RUN chown drill:drill /opt/drill -R && \
+    echo "drill ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+COPY conf/drill-on-yarn.conf /home/drill/
+
+ENV DRILL_HOME=/opt/drill \
+    PATH=/opt/drill/bin:/home/drill/.local/bin:$PATH \
+    HADOOP_CONF_DIR=/opt/drill/hadoop-conf \
+    HDFS_URL=hdfs://namenode:9000/
+
+RUN envsubst < /home/drill/drill-on-yarn.conf > /opt/drill/conf/drill-on-yarn.conf && \
+    chown drill:drill /opt/drill/conf/drill-on-yarn.conf
+
 USER drill
+
 WORKDIR /home/drill
 
-ENV SPAKR_HOME=/opt/drill \
-    PATH=/opt/drill/bin:/home/drill/.local/bin:$PATH
