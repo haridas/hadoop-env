@@ -1,0 +1,26 @@
+FROM ubuntu:19.04
+
+RUN apt-get update && \
+    apt-get install -y wget openjdk-8-jdk openjdk-8-jre
+
+RUN mkdir /opt/zk && wget -q -O- http://mirrors.estointernet.in/apache/zookeeper/zookeeper-3.4.13/zookeeper-3.4.13.tar.gz \
+    | tar -xzv -C /opt/zk --strip 1
+
+RUN useradd -ms /bin/bash zk
+
+RUN apt-get update && \
+    apt-get install -y telnet net-tools gettext sudo
+
+COPY conf/zoo.cfg /opt/zk/conf/
+
+RUN chown zk:zk /opt/zk -R && \
+    echo "zk ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+ENV zk_HOME=/opt/zk \
+    PATH=/opt/zk/bin:/home/zk/.local/bin:$PATH
+
+USER zk
+
+WORKDIR /home/zk
+
+ENTRYPOINT ["/opt/zk/bin/zkServer.sh", "start-foreground"]

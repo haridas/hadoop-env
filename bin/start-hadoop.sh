@@ -6,15 +6,15 @@ echo "=> Starting a hadoop cluster with 1 namenode and 2 datanode"
 docker network create hadoop-nw &> /dev/null || true
 
 # Start namenode
-docker pull haridasn/hadoop-2.8.5
+#docker pull haridasn/hadoop-2.8.5
 docker run -it --rm -d --name namenode -p 50070:50070 -p 8088:8088  --network hadoop-nw haridasn/hadoop-2.8.5 namenode
 namenodeIp=`docker exec namenode ifconfig | grep eth0 -A 1 | grep inet | awk {' print $2 '}`
 
 echo "Namenode IP: $namenodeIp"
 
 # Start two datanodes
-docker run -it --rm -d --name datanode1 --memory 3g --cpus 2 --network hadoop-nw haridasn/hadoop-2.8.5 datanode $namenodeIp
-docker run -it --rm -d --name datanode2 --memory 3g --cpus 2 --network hadoop-nw haridasn/hadoop-2.8.5 datanode $namenodeIp
+docker run -it --rm -d --name datanode1 -p 8042:8042 -p 8048:8048 --memory 3g --cpus 2 --network hadoop-nw haridasn/hadoop-2.8.5 datanode $namenodeIp
+docker run -it --rm -d --name datanode2 -p 8043:8042 -p 8049:8048 --memory 3g --cpus 2 --network hadoop-nw haridasn/hadoop-2.8.5 datanode $namenodeIp
 
 echo 
 echo "=> Started Hadoop cluster !!"

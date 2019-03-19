@@ -8,20 +8,29 @@ RUN mkdir /opt/drill && wget -q -O- http://mirrors.estointernet.in/apache/drill/
 
 RUN useradd -ms /bin/bash drill
 
-RUN apt-get install -y telnet net-tools gettext sudo
+RUN apt-get update && \
+    apt-get install -y telnet net-tools gettext sudo
 
 RUN chown drill:drill /opt/drill -R && \
     echo "drill ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-COPY conf/drill-on-yarn.conf /home/drill/
+COPY conf/drill/drill-on-yarn.conf /tmp/
+COPY conf/drill/drill-override.conf /tmp/
 
 ENV DRILL_HOME=/opt/drill \
     PATH=/opt/drill/bin:/home/drill/.local/bin:$PATH \
     HADOOP_CONF_DIR=/opt/drill/hadoop-conf \
-    HDFS_URL=hdfs://namenode:9000/
+    HDFS_URL=hdfs://namenode:9000/ \
+    DRILL_CONF_DIR=/home/drill/site \
+    ZK_HOST=zk:2181 \
+    DRILL_CLUSTER_NAME=docker-drill
 
-RUN envsubst < /home/drill/drill-on-yarn.conf > /opt/drill/conf/drill-on-yarn.conf && \
-    chown drill:drill /opt/drill/conf/drill-on-yarn.conf
+# Drill conf dir act as the site directory for the particular drill cluster.
+#
+
+RUN envsubst < /tmp/drill-on-yarn.conf > /opt/drill/conf/drill-on-yarn.conf && \
+    envsubst < /tmp/drill-override.conf > /opt/drill/conf/drill-override.conf && \
+    chown drill:drill /opt/drill -R
 
 USER drill
 

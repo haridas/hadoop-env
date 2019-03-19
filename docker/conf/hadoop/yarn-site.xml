@@ -17,6 +17,7 @@
     <!-- Helps to avoid ambiguous hostnames coming over here, we override it and
          pass specific values -->
 
+    <!--
     <property>
             <name>yarn.nodemanager.hostname</name>
             <value>${WORKER_HOSTNAME}</value>
@@ -25,6 +26,7 @@
             <name>yarn.nodemanager.address</name>
             <value>${WORKER_HOSTNAME}:8048</value>
     </property>
+    -->
 
     <!-- Memory configuration for 2GB node, not eating out all the RAM of the node -->
     <property>
