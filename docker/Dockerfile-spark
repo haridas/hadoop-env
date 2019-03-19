@@ -11,6 +11,9 @@ RUN apt-get install -y supervisor telnet net-tools gettext python-pip python-dev
 RUN useradd -ms /bin/bash spark
 
 RUN chown spark:spark /opt/spark -R
+
+RUN apt-get install -y vim
+
 USER spark
 WORKDIR /home/spark
 

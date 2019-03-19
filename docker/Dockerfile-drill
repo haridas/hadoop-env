@@ -6,16 +6,11 @@ RUN apt-get update && \
 RUN mkdir /opt/drill && wget -q -O- http://mirrors.estointernet.in/apache/drill/drill-1.15.0/apache-drill-1.15.0.tar.gz \
     | tar -xzv -C /opt/drill --strip 1
 
-RUN apt-get install -y supervisor telnet net-tools gettext python-pip python-dev
+RUN useradd -ms /bin/bash drill
 
-RUN useradd -ms /bin/bash spark
+RUN chown drill:drill /opt/drill -R
+USER drill
+WORKDIR /home/drill
 
-RUN chown spark:spark /opt/spark -R
-USER spark
-WORKDIR /home/spark
-
-COPY requirements-spark.txt requirements.txt
-RUN pip install --user -r requirements.txt
-
-ENV SPAKR_HOME=/opt/spark \
-    PATH=/opt/spark/bin:/home/spark/.local/bin:$PATH
+ENV SPAKR_HOME=/opt/drill \
+    PATH=/opt/drill/bin:/home/drill/.local/bin:$PATH

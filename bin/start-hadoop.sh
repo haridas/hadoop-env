@@ -6,7 +6,8 @@ echo "=> Starting a hadoop cluster with 1 namenode and 2 datanode"
 docker network create hadoop-nw &> /dev/null || true
 
 # Start namenode
-docker run -it --rm -d --name namenode -p 8088:8088  --network hadoop-nw haridasn/hadoop-2.8.5 namenode
+docker pull haridasn/hadoop-2.8.5
+docker run -it --rm -d --name namenode -p 50070:50070 -p 8088:8088  --network hadoop-nw haridasn/hadoop-2.8.5 namenode
 namenodeIp=`docker exec namenode ifconfig | grep eth0 -A 1 | grep inet | awk {' print $2 '}`
 
 echo "Namenode IP: $namenodeIp"
@@ -19,6 +20,7 @@ echo
 echo "=> Started Hadoop cluster !!"
 
 # Start the docker container.
+docker pull haridasn/hadoop-cli
 docker run -it --rm -d --name hadoop-cli --network hadoop-nw haridasn/hadoop-cli
 rm -rf /tmp/etc
 docker cp namenode:/opt/hadoop/etc /tmp/etc
@@ -39,7 +41,7 @@ hadoop client container to interact with the cluster.
 
 => Try these commands to ensure cluster is up
 
-$ docker exec hadoop-cli /opt/hadoop/bin/yarn node -list
-$ docker exec hadoop-cli /opt/hadoop/bin/hdfs dfsadmin -report
+$ docker exec hadoop-cli yarn node -list
+$ docker exec hadoop-cli hdfs dfsadmin -report
 "
 echo

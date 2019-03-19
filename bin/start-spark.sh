@@ -1,5 +1,7 @@
-
-docker run -it -d  --name spark --network hadoop-nw haridasn/spark-2.4.0
+#
+# Run spark and configure it with hadoop-conf
+docker pull haridasn/spark-2.4.0
+docker run -it -d  --name spark -p 8090:8090 --network hadoop-nw haridasn/spark-2.4.0
 docker cp /tmp/etc/hadoop spark:/opt/spark/hadoop-conf
 
 
