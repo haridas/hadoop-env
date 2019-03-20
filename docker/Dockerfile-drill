@@ -30,7 +30,6 @@ ENV DRILL_HOME=/opt/drill \
 RUN envsubst < /tmp/drill-conf-template/drill-on-yarn.conf > /opt/drill/conf/drill-on-yarn.conf && \
     envsubst < /tmp/drill-conf-template/drill-override.conf > /opt/drill/conf/drill-override.conf && \
     envsubst < /tmp/drill-conf-template/drill-sqlline-override.conf > /opt/drill/conf/drill-sqlline-override.conf && \
-    envsubst < /tmp/drill-conf-template/storage-plugins-override.conf > /opt/drill/conf/storage-plugins-override.conf && \
     chown drill:drill /opt/drill/conf -R
 
 USER drill

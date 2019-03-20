@@ -13,8 +13,8 @@ namenodeIp=`docker exec namenode ifconfig | grep eth0 -A 1 | grep inet | awk {' 
 echo "Namenode IP: $namenodeIp"
 
 # Start two datanodes
-docker run -it --rm -d --name datanode1 -p 8042:8042 -p 8048:8048 --memory 3g --cpus 2 --network hadoop-nw haridasn/hadoop-2.8.5 datanode $namenodeIp
-docker run -it --rm -d --name datanode2 -p 8043:8042 -p 8049:8048 --memory 3g --cpus 2 --network hadoop-nw haridasn/hadoop-2.8.5 datanode $namenodeIp
+docker run -it --rm -d --name datanode1 -p 8042:8042 -p 8047-8048:8047-8048 --memory 3g --cpus 2 --network hadoop-nw haridasn/hadoop-2.8.5 datanode $namenodeIp
+docker run -it --rm -d --name datanode2 -p 8043:8042 -p 8049:8048 -p 8037:8047 --memory 3g --cpus 2 --network hadoop-nw haridasn/hadoop-2.8.5 datanode $namenodeIp
 
 echo 
 echo "=> Started Hadoop cluster !!"
