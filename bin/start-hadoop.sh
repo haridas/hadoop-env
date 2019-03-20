@@ -6,7 +6,7 @@ echo "=> Starting a hadoop cluster with 1 namenode and 2 datanode"
 docker network create hadoop-nw &> /dev/null || true
 
 # Start namenode
-#docker pull haridasn/hadoop-2.8.5
+docker pull haridasn/hadoop-2.8.5
 docker run -it --rm -d --name namenode -p 50070:50070 -p 8088:8088  --network hadoop-nw haridasn/hadoop-2.8.5 namenode
 namenodeIp=`docker exec namenode ifconfig | grep eth0 -A 1 | grep inet | awk {' print $2 '}`
 
