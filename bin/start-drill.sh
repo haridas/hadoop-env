@@ -25,6 +25,7 @@ docker exec drill mkdir /home/drill/site
 docker exec drill cp /opt/drill/conf/drill-on-yarn.conf /home/drill/site/
 docker exec drill cp /opt/drill/conf/drill-env.sh /home/drill/site/
 docker exec drill cp /opt/drill/conf/drill-override.conf /home/drill/site/
+docker exec drill cp /opt/drill/conf/* /home/drill/site/
 docker exec drill cp /opt/drill/hadoop-conf/core-site.xml /home/drill/site/
 docker exec drill cp /opt/drill/hadoop-conf/hdfs-site.xml /home/drill/site/
 

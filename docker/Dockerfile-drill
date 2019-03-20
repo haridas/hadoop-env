@@ -14,8 +14,7 @@ RUN apt-get update && \
 RUN chown drill:drill /opt/drill -R && \
     echo "drill ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-COPY conf/drill/drill-on-yarn.conf /tmp/
-COPY conf/drill/drill-override.conf /tmp/
+COPY conf/drill /tmp/drill-conf-template
 
 ENV DRILL_HOME=/opt/drill \
     PATH=/opt/drill/bin:/home/drill/.local/bin:$PATH \
@@ -28,9 +27,11 @@ ENV DRILL_HOME=/opt/drill \
 # Drill conf dir act as the site directory for the particular drill cluster.
 #
 
-RUN envsubst < /tmp/drill-on-yarn.conf > /opt/drill/conf/drill-on-yarn.conf && \
-    envsubst < /tmp/drill-override.conf > /opt/drill/conf/drill-override.conf && \
-    chown drill:drill /opt/drill -R
+RUN envsubst < /tmp/drill-conf-template/drill-on-yarn.conf > /opt/drill/conf/drill-on-yarn.conf && \
+    envsubst < /tmp/drill-conf-template/drill-override.conf > /opt/drill/conf/drill-override.conf && \
+    envsubst < /tmp/drill-conf-template/drill-sqlline-override.conf > /opt/drill/conf/drill-sqlline-override.conf && \
+    envsubst < /tmp/drill-conf-template/storage-plugins-override.conf > /opt/drill/conf/storage-plugins-override.conf && \
+    chown drill:drill /opt/drill/conf -R
 
 USER drill
 
