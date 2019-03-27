@@ -1,0 +1,89 @@
+== Spark on Kubernetes
+
+Kubernetes is a linux container manager, the ideas is similar to how yarn manages the 
+jvm containers in hadoop environment. Kubernetes can be used to deploy very hetrogenious
+workloads, and it can meet a requirements of an entire business. eg; Deploy applications
+, dev/stage environments, offline or batch processing services etc. As the hadoop
+environment is specific to bigdata processing, here we can use existing kubernetes
+cluster to do the things that we done on hadoop cluster or spark cluster.
+
+This tutorial covers how we can quickly setup a kubernetes cluster and deploy a
+spark cluster on it, so that then we can play on spark. The kubernetes act as one
+of the spark's cluster manager, there is no change in other aspects of how spark
+does it's functionalities.
+
+
+== Setup spark on kubernetes
+
+Kubernet can be deploy in multi-node or single node environment similar to
+hadoop cluster. Here we try the kubernetes setup on a VM.
+
+
+We will be using `minikube` tool to setup kubernetes cluster. Minikube provide an easy
+way to setup kubernetes cluster on a VM for testing and experiment purpose.
+
+=== Gnu/Linux Environment:-
+
+- Install virtualbox
+- Follow this link to install minikube https://kubernetes.io/docs/tasks/tools/install-minikube/#install-minikube
+- Install kubectl - https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-native-package-management
+
+=== Mac environment:- 
+
+```bash
+brew cask install minikube
+brew install docker-machine-driver-hyperkit
+minikube start --vm-driver hyperkit
+```
+
+`kubectl` command available in mac if you already have the docker installed.
+
+=== Test kubernetes cluster is up
+
+```bash
+kubectl cluster-info
+```
+Copy the master URL, we need it bellow to submit spark jobs.
+
+=== Ensure you have JDK 1.8 installed in your laptop
+
+=== Prepare spark container images for kubernetes cluster
+
+Kubernetes is a container manager or orchestrator, we need to package the spark in
+docker image form to deploy them on kubernetes cluster.
+`spark-submit` command support the spark job submission into kubernetes cluster
+by just changing the `--master url`
+
+
+NOTE: Run this after the kubernetes cluster is up.
+```bash
+# Download a copy of the spark binary into your laptop and build the docker
+# image from it.
+wget http://mirrors.estointernet.in/apache/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+cd spark-2.4.0-bin-hadoop2.7
+./bin/docker-image-tool.sh -m -t 2.4.0 build
+```
+
+=== Start a spark client on kubernetes cluster manager
+
+```bash
+
+# Get the kubernetes master url, will be in this form 'https://<host:port>'.
+minikube cluster-info
+
+cd spark-2.4.0-bin-hadoop2.7
+./bin/spark-shell --master k8s://https://<host:port> --name spark-kube-cli --deploy-mode client \
+    --conf spark.kubernetes.container.image=spark:2.4.0
+
+```
+Now we can try with all the spark command features available, only change here
+is the `--master` param and extra `--conf` with image name for the spark.
+
+
+== Why spark on kubernetes
+
+1. Kubernetes can work with wide variety of application cluster, your entire application
+stack it can host.
+2. Easy to deploy and manager different types of applications and its different stages.
+3. If you have a kubernetes cluster in your infrastructure, this is the best option
+  available to run a spark.

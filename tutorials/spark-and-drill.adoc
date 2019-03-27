@@ -18,9 +18,6 @@ docker ps -a
 ```
 
 
-
-
-
 == Setup Apache Drill
 
 For this workshop we will be using Drill over hadoop cluster.
