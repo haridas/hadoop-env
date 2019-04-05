@@ -30,12 +30,17 @@ way to setup kubernetes cluster on a VM for testing and experiment purpose.
 - Follow this link to install minikube https://kubernetes.io/docs/tasks/tools/install-minikube/#install-minikube
 - Install kubectl - https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-native-package-management
 
+Start the minikube to launch the kubernetes cluster.
+```bash
+minikube start --cpus 3 --memory 6000
+```
+
 === Mac environment:- 
 
 ```bash
 brew cask install minikube
 brew install docker-machine-driver-hyperkit
-minikube start --vm-driver hyperkit
+minikube start --vm-driver hyperkit --cpus 3 --memory 6000
 ```
 
 `kubectl` command available in mac if you already have the docker installed.
