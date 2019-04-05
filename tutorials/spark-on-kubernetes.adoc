@@ -47,6 +47,16 @@ kubectl cluster-info
 ```
 Copy the master URL, we need it bellow to submit spark jobs.
 
+
+```bash
+
+kubectl create namespace spark1
+kubectl create serviceaccount jumppod -n spark1
+kubectl create rolebinding jumppod-rb --clusterrole=admin --serviceaccount=spark1:jumppod -n spark1
+kubectl run jump-1 -ti --rm=true -n spark1 --image=brainlounge/jumppod:ubuntu-18.04 --serviceaccount='jumppod'
+
+```
+
 === Ensure you have JDK 1.8 installed in your laptop
 
 === Prepare spark container images for kubernetes cluster
